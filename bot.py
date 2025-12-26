@@ -11,10 +11,10 @@ import requests
 
 # ================= КОНФИГУРАЦИЯ =================
 # Токен берется из секретов GitHub
-TOKEN = os.getenv('TELEGRAM_TOKEN', '')
+TOKEN = os.getenv('7778232896:AAE3VzlNOwtNWJYkplZGrGORJIA7l0luM_w', '')
 
 # ID администраторов (формат: "123456789,987654321")
-ADMIN_IDS_STR = os.getenv('ADMIN_IDS', '')
+ADMIN_IDS_STR = os.getenv('5638353159','1479958664')
 ADMIN_IDS = [int(id.strip()) for id in ADMIN_IDS_STR.split(',') if id.strip()]
 
 # Файл с данными
