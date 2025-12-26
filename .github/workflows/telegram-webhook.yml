@@ -1,0 +1,36 @@
+name: Handle Telegram Webhook
+
+on:
+  repository_dispatch:
+    types: [telegram-command]
+
+jobs:
+  process-command:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+    
+    - name: Handle Telegram command
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        CHAT_ID: ${{ github.event.client_payload.chat_id }}
+        COMMAND: ${{ github.event.client_payload.command }}
+      run: |
+        python command_handler.py "$CHAT_ID" "$COMMAND"
+    
+    - name: Log result
+      run: |
+        echo "✅ Команда '${{ github.event.client_payload.command }}' обработана"
+        echo "👤 Для пользователя: ${{ github.event.client_payload.chat_id }}"
