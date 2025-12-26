@@ -10,11 +10,14 @@ import datetime
 import requests
 
 # ================= КОНФИГУРАЦИЯ =================
-# Токен берется из секретов GitHub
-TOKEN = os.getenv('7778232896:AAE3VzlNOwtNWJYkplZGrGORJIA7l0luM_w', '')
+# ⚠️ ВНИМАНИЕ: Токен берется из секретов GitHub
+# НЕ вставляйте токен здесь! Добавьте его в секреты GitHub
+TOKEN = os.getenv('TELEGRAM_TOKEN', '')
 
-# ID администраторов (формат: "123456789,987654321")
-ADMIN_IDS_STR = os.getenv('5638353159','1479958664')
+# ⚠️ ВНИМАНИЕ: ID администраторов берется из секретов GitHub
+# Формат: "123456789,987654321" (без пробелов)
+# НЕ вставляйте ID здесь! Добавьте их в секреты GitHub
+ADMIN_IDS_STR = os.getenv('ADMIN_IDS', '')
 ADMIN_IDS = [int(id.strip()) for id in ADMIN_IDS_STR.split(',') if id.strip()]
 
 # Файл с данными
@@ -150,6 +153,12 @@ def send_telegram_message(chat_id, text):
             return True
         else:
             log(f"❌ Ошибка отправки: {response.status_code}")
+            # Показываем подробности ошибки
+            try:
+                error_details = response.json()
+                log(f"❌ Детали ошибки: {error_details}")
+            except:
+                pass
             return False
             
     except Exception as e:
@@ -160,50 +169,33 @@ def send_telegram_message(chat_id, text):
 
 def main():
     """Основная функция, которая запускается каждый день."""
-    log("=" * 50)def main():
-    """Основная функция, которая запускается каждый день."""
     log("=" * 50)
-    log("🚀 ЗАПУСК ТЕЛЕГРАМ БОТА ЧЕРЕЗ GITHUB ACTIONS")
-    log("=" * 50)
-    
-    # ======= ДОБАВЬТЕ ЭТОТ БЛОК =======
-    # Проверка переменных окружения
-    all_env_vars = dict(os.environ)
-    log(f"Всего переменных окружения: {len(all_env_vars)}")
-    
-    # Ищем TELEGRAM_TOKEN
-    found_token = False
-    for key, value in all_env_vars.items():
-        if 'token' in key.lower() or 'TELEGRAM' in key:
-            log(f"Найдена переменная: {key} = {value[:10]}...")
-            found_token = True
-    
-    if not found_token:
-        log("❌ TELEGRAM_TOKEN не найден в переменных окружения!")
-    
-    # Покажем первые 5 переменных
-    for i, (key, value) in enumerate(list(all_env_vars.items())[:5]):
-        log(f"ENV[{i}]: {key} = {value[:20]}...")
-    # ===================================
-    
-    # Проверяем конфигурацию
-    if not TOKEN:
-        log("❌ КРИТИЧЕСКАЯ ОШИБКА: Не установлен TELEGRAM_TOKEN")
-        log(f"Текущее значение TOKEN: '{TOKEN}'")
-        return
     log("🚀 ЗАПУСК ТЕЛЕГРАМ БОТА ЧЕРЕЗ GITHUB ACTIONS")
     log("=" * 50)
     
     # Проверяем конфигурацию
     if not TOKEN:
         log("❌ КРИТИЧЕСКАЯ ОШИБКА: Не установлен TELEGRAM_TOKEN")
+        log("💡 РЕШЕНИЕ: Добавьте секрет TELEGRAM_TOKEN в GitHub:")
+        log("   1. Settings → Secrets and variables → Actions")
+        log("   2. New repository secret")
+        log("   3. Name: TELEGRAM_TOKEN")
+        log("   4. Value: ваш_токен_бота")
+        log("   5. Add secret")
         return
     
     if not ADMIN_IDS:
         log("❌ КРИТИЧЕСКАЯ ОШИБКА: Не установлены ADMIN_IDS")
+        log("💡 РЕШЕНИЕ: Добавьте секрет ADMIN_IDS в GitHub:")
+        log("   1. Settings → Secrets and variables → Actions")
+        log("   2. New repository secret")
+        log("   3. Name: ADMIN_IDS")
+        log("   4. Value: ваш_id,второй_id (без пробелов)")
+        log("   5. Add secret")
         return
     
-    log(f"👥 Получателей: {len(ADMIN_IDS)}")
+    log(f"✅ TELEGRAM_TOKEN доступен")
+    log(f"✅ Получателей: {len(ADMIN_IDS)}")
     log(f"📅 Дата: {datetime.date.today().strftime('%d.%m.%Y')}")
     
     # Загружаем данные
